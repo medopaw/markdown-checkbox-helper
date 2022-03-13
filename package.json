@@ -10,17 +10,9 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:markdown-checkbox-helper.helloWorld"
+        "onCommand:markdown-checkbox-helper.toggleStyleWrapping"
 	],
 	"main": "./out/extension.js",
-	"contributes": {
-		"commands": [
-			{
-				"command": "markdown-checkbox-helper.helloWorld",
-				"title": "Hello World"
-			}
-		]
-	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -p ./",
