@@ -1,7 +1,7 @@
 {
   "name": "markdown-checkbox-helper",
 	"displayName": "Markdown Checkbox Helper",
-	"description": "Shortcuts to toggle state of checkboxes and following text in markdown, including checked or not, strike through or not, highlighted or not, etc. Support customization for more states and more shortcuts.",
+	"description": "Enables you to add shortcuts to toggle states of a checkbox line in markdown files, including checked or not, strike-through or not, highlighted or not, etc. Supports customization for more states and more shortcuts.",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.65.0"

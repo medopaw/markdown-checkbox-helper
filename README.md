@@ -2,6 +2,54 @@
 
 This is the README for your extension "markdown-checkbox-helper". After writing up a brief description, we recommend including the following sections.
 
+VSCode extension.
+
+1. Enables you to add Shortcuts to toggle states of a checkbox line in markdown files, including checked or not, strike-through or not, highlighted or not, etc.
+2. Supports customization for more states and more shortcuts.
+
+This is the keyboard shortcuts I added in my VSCode `keybindings.json`:
+
+```json
+{
+    "key": "cmd+b",
+    "when": "editorTextFocus && !editorReadonly",
+    "command": "markdown-checkbox-helper.toggleStyleWrapping",
+    "args": {
+        "before": "**",
+        "after": "**"
+    }
+},
+{
+    "key": "cmd+i",
+    "when": "editorTextFocus && !editorReadonly",
+    "command": "markdown-checkbox-helper.toggleStyleWrapping",
+    "args": {
+        "before": "*",
+        "after": "*"
+    }
+},
+{
+    "key": "ctrl+=",
+    "when": "editorTextFocus && !editorReadonly",
+    "command": "markdown-checkbox-helper.toggleStyleWrapping",
+    "args": {
+        "before": "==",
+        "after": "=="
+    }
+},
+{
+    "key": "ctrl+-",
+    "when": "editorTextFocus && !editorReadonly",
+    "command": "markdown-checkbox-helper.toggleStyleWrapping",
+    "args": {
+        "before": "~~",
+        "after": "~~"
+    }
+},
+```
+
+Based on [Markdown All in One](https://github.com/yzhang-gh/vscode-markdown).
+
 ## Features
 
 Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
@@ -35,19 +83,12 @@ Calling out known issues can help limit users opening duplicate issues against y
 
 Users appreciate release notes as you update your extension.
 
-### 1.0.0
+### 0.0.1
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+Initial release
 
 -----------------------------------------------------------------------------------------------------------
+
 ## Following extension guidelines
 
 Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
