@@ -1,3 +1,5 @@
+'use strict';
+
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 // import * as vscode from 'vscode';
@@ -20,63 +22,63 @@ export function activate(context: ExtensionContext) {
 }
 
 function toggleStyleWrapping(startPattern: string, endPattern = startPattern) {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		// window.showInformationMessage(`startPattern: ${startPattern}, endPattern: ${endPattern}`);
+    // The code you place here will be executed every time your command is executed
+    // Display a message box to the user
+    // window.showInformationMessage(`startPattern: ${startPattern}, endPattern: ${endPattern}`);
 
-		let editor = window.activeTextEditor;
-		let selections = editor.selections;
-	
-		let batchEdit = new WorkspaceEdit();
-		let shifts: [Position, number][] = [];
-		let newSelections: Selection[] = selections.slice();
-	
-		for (const [i, selection] of selections.entries()) {
-	
-			let cursorPos = selection.active;
-			const shift = shifts.map(([pos, s]) => (selection.start.line === pos.line && selection.start.character >= pos.character) ? s : 0)
-				.reduce((a, b) => a + b, 0);
-	
-			if (selection.isEmpty) {
-				const context = getContext(editor, cursorPos, startPattern, endPattern);
-	
-				// No selected text
-				if (
-					startPattern === endPattern &&
-					["**", "*", "__", "_", "==", "~~", "^", "~"].includes(startPattern) &&
-					context === `${startPattern}text|${endPattern}`
-				) {
-					// `**text|**` to `**text**|`
-					let newCursorPos = cursorPos.with({ character: cursorPos.character + shift + endPattern.length });
-					newSelections[i] = new Selection(newCursorPos, newCursorPos);
-					continue;
-				} else if (context === `${startPattern}|${endPattern}`) {
-					// `**|**` to `|`
-					let start = cursorPos.with({ character: cursorPos.character - startPattern.length });
-					let end = cursorPos.with({ character: cursorPos.character + endPattern.length });
-					wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, new Range(start, end), false, startPattern, endPattern);
-				} else {
-					// Select word under cursor
-					let wordRange = editor.document.getWordRangeAtPosition(cursorPos);
-					if (wordRange === undefined) {
-						wordRange = selection;
-					}
-					// One special case: toggle strikethrough in task list
-					const currentTextLine = editor.document.lineAt(cursorPos.line);
-					if (/^\s*[\*\+\-] (\[[ x]\] )? */g.test(currentTextLine.text)) {
-						wordRange = currentTextLine.range.with(new Position(cursorPos.line, currentTextLine.text.match(/^\s*[\*\+\-] (\[[ x]\] )? */g)[0].length));
-					}
-					wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, wordRange, false, startPattern, endPattern);
-				}
-			} else {
-				// Text selected
-				wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, selection, true, startPattern, endPattern);
-			}
-		}
-	
-		return workspace.applyEdit(batchEdit).then(() => {
-			editor.selections = newSelections;
-		});
+    let editor = window.activeTextEditor!;
+
+    let selections = editor.selections;
+
+    let batchEdit = new WorkspaceEdit();
+    let shifts: [Position, number][] = [];
+    let newSelections: Selection[] = selections.slice();
+
+    for (const [i, selection] of selections.entries()) {
+
+        let cursorPos = selection.active;
+        const shift = shifts.map(([pos, s]) => (selection.start.line === pos.line && selection.start.character >= pos.character) ? s : 0)
+            .reduce((a, b) => a + b, 0);
+
+        if (selection.isEmpty) {
+            const context = getContext(editor, cursorPos, startPattern, endPattern);
+
+            // No selected text
+            if (
+                startPattern === endPattern &&
+                ["**", "*", "__", "_", "==", "~~", "^", "~"].includes(startPattern) &&
+                context === `${startPattern}text|${endPattern}`
+            ) {
+                // `**text|**` to `**text**|`
+                let newCursorPos = cursorPos.with({ character: cursorPos.character + shift + endPattern.length });
+                newSelections[i] = new Selection(newCursorPos, newCursorPos);
+                continue;
+            } else if (context === `${startPattern}|${endPattern}`) {
+                // `**|**` to `|`
+                let start = cursorPos.with({ character: cursorPos.character - startPattern.length });
+                let end = cursorPos.with({ character: cursorPos.character + endPattern.length });
+                wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, new Range(start, end), false, startPattern, endPattern);
+            } else {
+                // Select word under cursor
+                let wordRange = editor.document.getWordRangeAtPosition(cursorPos);
+                if (wordRange === undefined) {
+                    wordRange = selection;
+                }
+                const currentTextLine = editor.document.lineAt(cursorPos.line);
+                if (/^\s*[\*\+\-] (\[[ x]\] )? */g.test(currentTextLine.text)) {
+                    wordRange = currentTextLine.range.with(new Position(cursorPos.line, currentTextLine.text.match(/^\s*[\*\+\-] (\[[ x]\] )? */g)![0].length));
+                }
+                wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, wordRange, false, startPattern, endPattern);
+            }
+        } else {
+            // Text selected
+            wrapRange(editor, batchEdit, shifts, newSelections, i, shift, cursorPos, selection, true, startPattern, endPattern);
+        }
+    }
+
+    return workspace.applyEdit(batchEdit).then(() => {
+        editor.selections = newSelections;
+    });
 }
 
 /**
